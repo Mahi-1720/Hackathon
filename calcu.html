@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CalcuLab | The Ecosystem Portal</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="blindingFlash"></div>
+
+<header>
+    <a href="index.html" class="logo">🍃 CalcuLab</a>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="guide.html">Starter Guide</a> 
+        <a href="store.html">Aisle Store</a>
+        <a href="calcu.html" class="active">Quantum Calculator</a>
+    </nav>
+</header>
+
+<main>
+    <div class="panel-header">Equipment Catalog</div>
+        <div class="armory-header">
+            <h1 class="panel-header" style="color: var(--portal-blue);">Your System Configuration</h1>
+            <p>Select components and route them down the tracking conveyor line array.</p>
+        </div>
+        
+        <div class="armory-tabs">
+            <button class="tab-btn active" onclick="switchArmoryTab(event, 'imp')">Required Infrastructure</button>
+            <button class="tab-btn" onclick="switchArmoryTab(event, 'opt')">Optional Add-ons</button>
+        </div>
+
+        <div class="tab-content active" id="tabContent-imp">
+            </div>
+
+        <div class="tab-content" id="tabContent-opt">
+            </div>
+    </div>
+
+    <div class="adventure-zone">
+        <div class="conveyor-belt"></div>
+        <div class="traveling-capsule" id="travelingCapsule">🌱</div>
+
+        <div class="portal-wrapper" id="portalTriggerBtn" onclick="startPortalOverloadSequence()">
+            <div class="portal-ring"></div>
+            <div class="portal-vortex"></div>
+            <div id="portalStatusLabel" class="portal-status-label">System<br>Empty</div>
+        </div>
+    </div>
+
+    <div class="manifestation-vault">
+        <div>
+            <div class="vault-title">
+                <h2>Manifestation Vault</h2>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Absorbed Quantum Matter</p>
+            </div>
+            <div class="crystal-energy uncharged" id="crystalEnergy"></div>
+            
+            <div class="matrix-split-streams" id="matrixSplitStreams">
+                </div>
+        </div>
+
+        <div class="portal-output-terminal">
+            <div class="price-shield-shroud" id="priceShieldShroud">
+                <div class="shield-status-text" id="shieldStatusText">Matrix Locked</div>
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Load items & tap the portal core vortex to decipher pricing signals.</p>
+            </div>
+
+            <div class="terminal-row">
+                <span>Absorbed Nodes</span>
+                <span id="nodeCount">0 Units</span>
+            </div>
+            <div class="terminal-row highlight-monthly">
+                <span>Est. Running Cost</span>
+                <span id="outputMonthly">$0.00 / mo</span>
+            </div>
+            <div class="terminal-row total-setup">
+                <span>Total Setup Price</span>
+                <span id="outputTotal">$0.00</span>
+            </div>
+            <button class="clear-btn" onclick="purgePortal()">Purge Matrix</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    const catalogItems = [
+        { id: 'sm_system', type: 'imp', name: 'Small System Frame', price: 45.00, monthly: 3.50, icon: '🌱', desc: 'Windowsill core structure frame module.' },
+        { id: 'md_system', type: 'imp', name: 'Medium System Frame', price: 110.00, monthly: 7.00, icon: '🌿', desc: 'Balcony scaling layout baseline tier.' },
+        { id: 'lg_system', type: 'imp', name: 'Large System Frame', price: 240.00, monthly: 14.50, icon: '🌳', desc: 'Homestead vertical farming tower core.' },
+        { id: 'pump', type: 'imp', name: 'Silent Flow Hydro Pump', price: 28.00, monthly: 1.80, icon: '💧', desc: 'Core life-support circulation pump.' },
+        { id: 'lights', type: 'imp', name: 'Full LED Sunlight Array', price: 65.00, monthly: 5.20, icon: '💡', desc: 'Essential baseline photosynthetic radiation.' },
+        
+        { id: 'ph_kit', type: 'opt', name: 'Precision pH Balance Drops', price: 18.50, monthly: 0.00, icon: '🧪', desc: 'Optional diagnostic balance test fluid.' },
+        { id: 'nutrients', type: 'opt', name: 'Organic Trace Minerals', price: 22.00, monthly: 12.00, icon: '🧪', desc: 'Optional optimization metabolic catalyst.' }
+    ];
+
+    let portalActiveInventory = [];
+    let isDataDeciphered = false; 
+    let isOverloading = false;
+
+    // Tab switcher
+    window.switchArmoryTab = function(type) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById(`tabContent-${type}`).classList.add('active');
+    };
+
+    // Render Armory lists
+    const impContainer = document.getElementById('tabContent-imp');
+    const optContainer = document.getElementById('tabContent-opt');
+
+    function renderSelectionPanels() {
+        impContainer.innerHTML = catalogItems.filter(i => i.type === 'imp').map(module => generateNodeHTML(module)).join('');
+        optContainer.innerHTML = catalogItems.filter(i => i.type === 'opt').map(module => generateNodeHTML(module)).join('');
+    }
+
+    function generateNodeHTML(module) {
+        return `
+            <div class="item-node" onclick="transmitItemToPortal('${module.id}')">
+                <div class="node-icon">${module.icon}</div>
+                <div class="node-details">
+                    <h3>${module.name}</h3>
+                    <p>${module.desc}</p>
+                </div>
+                <div class="node-price">$${module.price.toFixed(2)}</div>
+            </div>
+        `;
+    }
+
+    // Conveyor Transit Transmission
+    window.transmitItemToPortal = function(id) {
+        if (isOverloading) return;
+
+        const itemObj = catalogItems.find(m => m.id === id);
+        if (!itemObj) return;
+
+        if (isDataDeciphered) {
+            lockDataShields();
+        }
+
+        const capsule = document.getElementById('travelingCapsule');
+        capsule.textContent = itemObj.icon;
+        
+        capsule.style.animation = 'none';
+        capsule.offsetHeight; 
+        capsule.style.animation = 'customTransmit 0.9s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards';
+
+        setTimeout(() => {
+            portalActiveInventory.push(itemObj);
+            updateInventoryListsOnly();
+            
+            const portalBtn = document.getElementById('portalTriggerBtn');
+            portalBtn.classList.remove('fused-locked');
+            portalBtn.classList.add('ready-to-fuse');
+            
+            document.getElementById('portalStatusLabel').innerHTML = "READY TO<br>FUSE";
+            document.getElementById('shieldStatusText').textContent = "Signal Primed";
+        }, 900);
+    };
+
+    function updateInventoryListsOnly() {
+        const streamContainer = document.getElementById('matrixSplitStreams');
+        const nodeCount = document.getElementById('nodeCount');
+
+        nodeCount.textContent = `${portalActiveInventory.length} Unit${portalActiveInventory.length !== 1 ? 's' : ''}`;
+
+        if(portalActiveInventory.length === 0) {
+            streamContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding-top:2rem; font-style:italic;">Portal matrix idling. Feed variables...</p>`;
+            return;
+        }
+
+        const impItems = portalActiveInventory.filter(i => i.type === 'imp');
+        const optItems = portalActiveInventory.filter(i => i.type === 'opt');
+
+        let outputHTML = '';
+        if (impItems.length > 0) {
+            outputHTML += `<div class="stream-section-title imp">Core Materials (${impItems.length})</div>`;
+            outputHTML += impItems.map(item => generateStreamNodeHTML(item)).join('');
+        }
+        if (optItems.length > 0) {
+            outputHTML += `<div class="stream-section-title opt" style="margin-top: 0.75rem;">Optional Modules (${optItems.length})</div>`;
+            outputHTML += optItems.map(item => generateStreamNodeHTML(item)).join('');
+        }
+        streamContainer.innerHTML = outputHTML;
+    }
+
+    function generateStreamNodeHTML(item) {
+        const accurateIndex = portalActiveInventory.indexOf(item);
+        return `
+            <div class="stream-node">
+                <span>${item.icon} ${item.name}</span>
+                <span class="neg" onclick="removeEcosystemElement(${accurateIndex})">[x]</span>
+            </div>
+        `;
+    }
+
+    // --- ENFORCED PORTAL CLICK SECURITY CHECKS ---
+    window.startPortalOverloadSequence = function() {
+        const portalBtn = document.getElementById('portalTriggerBtn');
+
+        if (portalActiveInventory.length === 0 || isOverloading || isDataDeciphered) {
+            return; 
+        }
+        
+        isOverloading = true;
+        portalBtn.classList.remove('ready-to-fuse');
+        portalBtn.classList.add('budging');
+        
+        document.getElementById('shieldStatusText').textContent = "CRITICAL OVERLOAD";
+        
+        let timeLeft = 3;
+        const statusLabel = document.getElementById('portalStatusLabel');
+        statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
+
+        const countdownInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
+            } else {
+                clearInterval(countdownInterval);
+                triggerPortalDetonation();
+            }
+        }, 1000);
+    };
+
+    function triggerPortalDetonation() {
+        const flash = document.getElementById('blindingFlash');
+        const portalBtn = document.getElementById('portalTriggerBtn');
+        
+        flash.style.opacity = '1';
+        
+        setTimeout(() => {
+            isDataDeciphered = true; 
+            isOverloading = false;
+            
+            portalBtn.classList.remove('budging');
+            portalBtn.classList.add('fused-locked'); 
+            
+            document.getElementById('priceShieldShroud').classList.add('shattered');
+            compileFinalBalanceOutputs();
+            
+            document.getElementById('crystalEnergy').classList.remove('uncharged');
+            document.getElementById('portalStatusLabel').innerHTML = "MATRIX<br>STABLE";
+
+            flash.style.transition = 'opacity 0.8s ease-in-out';
+            flash.style.opacity = '0';
+            
+            setTimeout(() => {
+                flash.style.transition = 'opacity 0.05s ease-out';
+            }, 800);
+
+        }, 70); 
+    }
+
+    function compileFinalBalanceOutputs() {
+        let baseSum = 0;
+        let monthlySum = 0;
+        portalActiveInventory.forEach(itm => {
+            baseSum += itm.price;
+            monthlySum += itm.monthly;
+        });
+        document.getElementById('outputMonthly').textContent = `$${monthlySum.toFixed(2)} / mo`;
+        document.getElementById('outputTotal').textContent = `$${baseSum.toFixed(2)}`;
+    }
+    function lockDataShields() {
+    isDataDeciphered = false;
+    
+    const portalBtn = document.getElementById('portalTriggerBtn');
+    portalBtn.classList.remove('fused-locked');
+    
+    document.getElementById('priceShieldShroud').classList.remove('shattered');
+    document.getElementById('crystalEnergy').classList.add('uncharged');
+    document.getElementById('shieldStatusText').textContent = "Configuration Locked";
+    }
+
+    window.removeEcosystemElement = function(index) {
+        if (isOverloading) return;
+        portalActiveInventory.splice(index, 1);
+        updateInventoryListsOnly();
+        if (portalActiveInventory.length === 0) {
+            purgePortal();
+        } else if (isDataDeciphered) {
+            compileFinalBalanceOutputs();
+        }
+    };
+
+   window.purgePortal = function() {
+    if (isOverloading) return;
+    portalActiveInventory = [];
+    lockDataShields();
+    updateInventoryListsOnly();
+    
+    const portalBtn = document.getElementById('portalTriggerBtn');
+    portalBtn.classList.remove('ready-to-fuse', 'fused-locked');
+    
+    document.getElementById('portalStatusLabel').innerHTML = "System<br>Empty";
+    document.getElementById('outputMonthly').textContent = '$0.00 / mo';
+    document.getElementById('outputTotal').textContent = '$0.00';
+};
+
+    renderSelectionPanels();
+    updateInventoryListsOnly();
+</script>
+</body>
+</html>
