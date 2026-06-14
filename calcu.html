@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CalcuLab | The Ecosystem Portal</title>
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -20,10 +20,11 @@
     </nav>
 </header>
 
-<main>
-    <div class="panel-header">Equipment Catalog</div>
+<main class="calculator-main">
+    <div class="item-armory">
+        <div class="panel-header">Equipment Catalog</div>
         <div class="armory-header">
-            <h1 class="panel-header" style="color: var(--portal-blue);">Your System Configuration</h1>
+            <h1 style="color: var(--portal-blue);">Your System Configuration</h1>
             <p>Select components and route them down the tracking conveyor line array.</p>
         </div>
         
@@ -32,11 +33,8 @@
             <button class="tab-btn" onclick="switchArmoryTab(event, 'opt')">Optional Add-ons</button>
         </div>
 
-        <div class="tab-content active" id="tabContent-imp">
-            </div>
-
-        <div class="tab-content" id="tabContent-opt">
-            </div>
+        <div class="tab-content active" id="tabContent-imp"></div>
+        <div class="tab-content" id="tabContent-opt"></div>
     </div>
 
     <div class="adventure-zone">
@@ -58,8 +56,7 @@
             </div>
             <div class="crystal-energy uncharged" id="crystalEnergy"></div>
             
-            <div class="matrix-split-streams" id="matrixSplitStreams">
-                </div>
+            <div class="matrix-split-streams" id="matrixSplitStreams"></div>
         </div>
 
         <div class="portal-output-terminal">
@@ -74,11 +71,11 @@
             </div>
             <div class="terminal-row highlight-monthly">
                 <span>Est. Running Cost</span>
-                <span id="outputMonthly">$0.00 / mo</span>
+                <span id="outputMonthly">₹0.00 / mo</span>
             </div>
             <div class="terminal-row total-setup">
                 <span>Total Setup Price</span>
-                <span id="outputTotal">$0.00</span>
+                <span id="outputTotal">₹0.00</span>
             </div>
             <button class="clear-btn" onclick="purgePortal()">Purge Matrix</button>
         </div>
@@ -87,29 +84,28 @@
 
 <script>
     const catalogItems = [
-        { id: 'sm_system', type: 'imp', name: 'Small System Frame', price: 45.00, monthly: 3.50, icon: '🌱', desc: 'Windowsill core structure frame module.' },
-        { id: 'md_system', type: 'imp', name: 'Medium System Frame', price: 110.00, monthly: 7.00, icon: '🌿', desc: 'Balcony scaling layout baseline tier.' },
-        { id: 'lg_system', type: 'imp', name: 'Large System Frame', price: 240.00, monthly: 14.50, icon: '🌳', desc: 'Homestead vertical farming tower core.' },
-        { id: 'pump', type: 'imp', name: 'Silent Flow Hydro Pump', price: 28.00, monthly: 1.80, icon: '💧', desc: 'Core life-support circulation pump.' },
-        { id: 'lights', type: 'imp', name: 'Full LED Sunlight Array', price: 65.00, monthly: 5.20, icon: '💡', desc: 'Essential baseline photosynthetic radiation.' },
+        { id: 'sm_system', type: 'imp', name: 'Small System Frame', price: 3500.00, monthly: 250.00, icon: '🌱', desc: 'Windowsill core structure frame module.' },
+        { id: 'md_system', type: 'imp', name: 'Medium System Frame', price: 7500.00, monthly: 450.00, icon: '🌿', desc: 'Balcony scaling layout baseline tier.' },
+        { id: 'lg_system', type: 'imp', name: 'Large System Frame', price: 16500.00, monthly: 950.00, icon: '🌳', desc: 'Homestead vertical farming tower core.' },
+        { id: 'pump', type: 'imp', name: 'Silent Flow Hydro Pump', price: 1800.00, monthly: 120.00, icon: '💧', desc: 'Core life-support circulation pump.' },
+        { id: 'lights', type: 'imp', name: 'Full LED Sunlight Array', price: 4500.00, monthly: 350.00, icon: '💡', desc: 'Essential baseline photosynthetic radiation.' },
         
-        { id: 'ph_kit', type: 'opt', name: 'Precision pH Balance Drops', price: 18.50, monthly: 0.00, icon: '🧪', desc: 'Optional diagnostic balance test fluid.' },
-        { id: 'nutrients', type: 'opt', name: 'Organic Trace Minerals', price: 22.00, monthly: 12.00, icon: '🧪', desc: 'Optional optimization metabolic catalyst.' }
+        { id: 'ph_kit', type: 'opt', name: 'Precision pH Balance Drops', price: 1200.00, monthly: 0.00, icon: '🧪', desc: 'Optional diagnostic balance test fluid.' },
+        { id: 'nutrients', type: 'opt', name: 'Organic Trace Minerals', price: 1500.00, monthly: 850.00, icon: '🧪', desc: 'Optional optimization metabolic catalyst.' }
     ];
 
     let portalActiveInventory = [];
     let isDataDeciphered = false; 
     let isOverloading = false;
 
-    // Tab switcher
-    window.switchArmoryTab = function(type) {
+    // Fixed Parameter Navigation Tab Switcher Engine
+    window.switchArmoryTab = function(event, type) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         event.currentTarget.classList.add('active');
         document.getElementById(`tabContent-${type}`).classList.add('active');
     };
 
-    // Render Armory lists
     const impContainer = document.getElementById('tabContent-imp');
     const optContainer = document.getElementById('tabContent-opt');
 
@@ -126,12 +122,11 @@
                     <h3>${module.name}</h3>
                     <p>${module.desc}</p>
                 </div>
-                <div class="node-price">$${module.price.toFixed(2)}</div>
+                <div class="node-price">₹${module.price.toLocaleString('en-IN')}</div>
             </div>
         `;
     }
 
-    // Conveyor Transit Transmission
     window.transmitItemToPortal = function(id) {
         if (isOverloading) return;
 
@@ -198,7 +193,6 @@
         `;
     }
 
-    // --- ENFORCED PORTAL CLICK SECURITY CHECKS ---
     window.startPortalOverloadSequence = function() {
         const portalBtn = document.getElementById('portalTriggerBtn');
 
@@ -263,18 +257,17 @@
             baseSum += itm.price;
             monthlySum += itm.monthly;
         });
-        document.getElementById('outputMonthly').textContent = `$${monthlySum.toFixed(2)} / mo`;
-        document.getElementById('outputTotal').textContent = `$${baseSum.toFixed(2)}`;
+        document.getElementById('outputMonthly').textContent = `₹${monthlySum.toLocaleString('en-IN')} / mo`;
+        document.getElementById('outputTotal').textContent = `₹${baseSum.toLocaleString('en-IN')}`;
     }
+
     function lockDataShields() {
-    isDataDeciphered = false;
-    
-    const portalBtn = document.getElementById('portalTriggerBtn');
-    portalBtn.classList.remove('fused-locked');
-    
-    document.getElementById('priceShieldShroud').classList.remove('shattered');
-    document.getElementById('crystalEnergy').classList.add('uncharged');
-    document.getElementById('shieldStatusText').textContent = "Configuration Locked";
+        isDataDeciphered = false;
+        const portalBtn = document.getElementById('portalTriggerBtn');
+        portalBtn.classList.remove('fused-locked');
+        document.getElementById('priceShieldShroud').classList.remove('shattered');
+        document.getElementById('crystalEnergy').classList.add('uncharged');
+        document.getElementById('shieldStatusText').textContent = "Configuration Locked";
     }
 
     window.removeEcosystemElement = function(index) {
@@ -288,22 +281,28 @@
         }
     };
 
-   window.purgePortal = function() {
-    if (isOverloading) return;
-    portalActiveInventory = [];
-    lockDataShields();
-    updateInventoryListsOnly();
-    
-    const portalBtn = document.getElementById('portalTriggerBtn');
-    portalBtn.classList.remove('ready-to-fuse', 'fused-locked');
-    
-    document.getElementById('portalStatusLabel').innerHTML = "System<br>Empty";
-    document.getElementById('outputMonthly').textContent = '$0.00 / mo';
-    document.getElementById('outputTotal').textContent = '$0.00';
-};
+    window.purgePortal = function() {
+        if (isOverloading) return;
+        portalActiveInventory = [];
+        lockDataShields();
+        updateInventoryListsOnly();
+        
+        const portalBtn = document.getElementById('portalTriggerBtn');
+        portalBtn.classList.remove('ready-to-fuse', 'fused-locked');
+        
+        document.getElementById('portalStatusLabel').innerHTML = "System<br>Empty";
+        document.getElementById('outputMonthly').textContent = '₹0.00 / mo';
+        document.getElementById('outputTotal').textContent = '₹0.00';
+    };
 
     renderSelectionPanels();
     updateInventoryListsOnly();
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("page-loaded");
+    });
 </script>
 </body>
 </html>
