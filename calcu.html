@@ -5,6 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CalcuLab | The Ecosystem Portal</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* ==========================================================================
+           LIGHT FUTURISTIC STYLING EXTENSIONS FOR QUANTUM PORTAL MATRIX
+           ========================================================================== */
+        #blindingFlash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #FAFAFA;
+            opacity: 0;
+            z-index: 999999 !important;
+            pointer-events: none;
+            backface-visibility: hidden;
+            will-change: opacity;
+            transition: opacity 0.15s ease-out;
+        }
+
+        /* Force global container freezing on overload */
+        body.critical-overload {
+            overflow: hidden !important;
+            height: 100vh !important;
+            position: fixed !important;
+            width: 100vw !important;
+        }
+
+        body.critical-overload::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(0,229,255,0.4) 0%, rgba(10,20,14,1) 80%);
+            z-index: 999990 !important;
+            animation: vortexVibration 0.1s infinite;
+        }
+
+        @keyframes vortexVibration {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            100% { transform: translate(-1px, -2px) rotate(0.5deg); }
+        }
+
+        .stream-section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        .stream-section-title.imp { background: rgba(57, 255, 20, 0.1); color: var(--text-light); }
+        .stream-section-title.opt { background: rgba(0, 229, 255, 0.1); color: var(--portal-blue); }
+    </style>
 </head>
 <body>
 
@@ -82,27 +138,33 @@
     </div>
 </main>
 
+<footer>
+    <div class="footer-tagline">Calculate Faster, Progress Faster</div>
+    <p class="footer-main-text">Calculate, cultivate, and thrive with 10,000+ home farmers worldwide.</p>
+    <p class="footer-sub-text">© 2026 CalcuLab. All rights reserved.</p>
+</footer>
+
 <script>
-    const catalogItems = [
+    const calcuItems = [
         { id: 'sm_system', type: 'imp', name: 'Small System Frame', price: 3500.00, monthly: 250.00, icon: '🌱', desc: 'Windowsill core structure frame module.' },
         { id: 'md_system', type: 'imp', name: 'Medium System Frame', price: 7500.00, monthly: 450.00, icon: '🌿', desc: 'Balcony scaling layout baseline tier.' },
         { id: 'lg_system', type: 'imp', name: 'Large System Frame', price: 16500.00, monthly: 950.00, icon: '🌳', desc: 'Homestead vertical farming tower core.' },
         { id: 'pump', type: 'imp', name: 'Silent Flow Hydro Pump', price: 1800.00, monthly: 120.00, icon: '💧', desc: 'Core life-support circulation pump.' },
         { id: 'lights', type: 'imp', name: 'Full LED Sunlight Array', price: 4500.00, monthly: 350.00, icon: '💡', desc: 'Essential baseline photosynthetic radiation.' },
-        
         { id: 'ph_kit', type: 'opt', name: 'Precision pH Balance Drops', price: 1200.00, monthly: 0.00, icon: '🧪', desc: 'Optional diagnostic balance test fluid.' },
         { id: 'nutrients', type: 'opt', name: 'Organic Trace Minerals', price: 1500.00, monthly: 850.00, icon: '🧪', desc: 'Optional optimization metabolic catalyst.' }
     ];
 
-    let portalActiveInventory = [];
-    let isDataDeciphered = false; 
-    let isOverloading = false;
+    portalActiveInventory = [];
+    isDataDeciphered = false; 
+    isOverloading = false;
 
-    // Fixed Parameter Navigation Tab Switcher Engine
     window.switchArmoryTab = function(event, type) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
         document.getElementById(`tabContent-${type}`).classList.add('active');
     };
 
@@ -110,8 +172,8 @@
     const optContainer = document.getElementById('tabContent-opt');
 
     function renderSelectionPanels() {
-        impContainer.innerHTML = catalogItems.filter(i => i.type === 'imp').map(module => generateNodeHTML(module)).join('');
-        optContainer.innerHTML = catalogItems.filter(i => i.type === 'opt').map(module => generateNodeHTML(module)).join('');
+        if(impContainer) impContainer.innerHTML = calcuItems.filter(i => i.type === 'imp').map(module => generateNodeHTML(module)).join('');
+        if(optContainer) optContainer.innerHTML = calcuItems.filter(i => i.type === 'opt').map(module => generateNodeHTML(module)).join('');
     }
 
     function generateNodeHTML(module) {
@@ -122,7 +184,7 @@
                     <h3>${module.name}</h3>
                     <p>${module.desc}</p>
                 </div>
-                <div class="node-price">₹${module.price.toLocaleString('en-IN')}</div>
+                <div class="node-price">₹${module.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             </div>
         `;
     }
@@ -130,7 +192,7 @@
     window.transmitItemToPortal = function(id) {
         if (isOverloading) return;
 
-        const itemObj = catalogItems.find(m => m.id === id);
+        const itemObj = calcuItems.find(m => m.id === id);
         if (!itemObj) return;
 
         if (isDataDeciphered) {
@@ -138,22 +200,27 @@
         }
 
         const capsule = document.getElementById('travelingCapsule');
-        capsule.textContent = itemObj.icon;
-        
-        capsule.style.animation = 'none';
-        capsule.offsetHeight; 
-        capsule.style.animation = 'customTransmit 0.9s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards';
+        if (capsule) {
+            capsule.textContent = itemObj.icon;
+            capsule.style.animation = 'none';
+            capsule.offsetHeight; 
+            capsule.style.animation = 'customTransmit 0.9s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards';
+        }
 
         setTimeout(() => {
             portalActiveInventory.push(itemObj);
             updateInventoryListsOnly();
             
             const portalBtn = document.getElementById('portalTriggerBtn');
-            portalBtn.classList.remove('fused-locked');
-            portalBtn.classList.add('ready-to-fuse');
+            if (portalBtn) {
+                portalBtn.classList.remove('fused-locked');
+                portalBtn.classList.add('ready-to-fuse');
+            }
             
-            document.getElementById('portalStatusLabel').innerHTML = "READY TO<br>FUSE";
-            document.getElementById('shieldStatusText').textContent = "Signal Primed";
+            const statusLabel = document.getElementById('portalStatusLabel');
+            const shieldText = document.getElementById('shieldStatusText');
+            if (statusLabel) statusLabel.innerHTML = "READY TO<br>FUSE";
+            if (shieldText) shieldText.textContent = "Signal Primed";
         }, 900);
     };
 
@@ -161,7 +228,11 @@
         const streamContainer = document.getElementById('matrixSplitStreams');
         const nodeCount = document.getElementById('nodeCount');
 
-        nodeCount.textContent = `${portalActiveInventory.length} Unit${portalActiveInventory.length !== 1 ? 's' : ''}`;
+        if (nodeCount) {
+            nodeCount.textContent = `${portalActiveInventory.length} Unit${portalActiveInventory.length !== 1 ? 's' : ''}`;
+        }
+
+        if(!streamContainer) return;
 
         if(portalActiveInventory.length === 0) {
             streamContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding-top:2rem; font-style:italic;">Portal matrix idling. Feed variables...</p>`;
@@ -188,7 +259,7 @@
         return `
             <div class="stream-node">
                 <span>${item.icon} ${item.name}</span>
-                <span class="neg" onclick="removeEcosystemElement(${accurateIndex})">[x]</span>
+                <span class="neg" style="cursor:pointer;" onclick="removeEcosystemElement(${accurateIndex})">[x]</span>
             </div>
         `;
     }
@@ -201,19 +272,23 @@
         }
         
         isOverloading = true;
-        portalBtn.classList.remove('ready-to-fuse');
-        portalBtn.classList.add('budging');
+        if (portalBtn) {
+            portalBtn.classList.remove('ready-to-fuse');
+            portalBtn.classList.add('budging');
+        }
         
-        document.getElementById('shieldStatusText').textContent = "CRITICAL OVERLOAD";
+        document.body.classList.add('critical-overload');
+        const shieldText = document.getElementById('shieldStatusText');
+        if (shieldText) shieldText.textContent = "CRITICAL OVERLOAD";
         
         let timeLeft = 3;
         const statusLabel = document.getElementById('portalStatusLabel');
-        statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
+        if (statusLabel) statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
 
         const countdownInterval = setInterval(() => {
             timeLeft--;
             if (timeLeft > 0) {
-                statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
+                if (statusLabel) statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
             } else {
                 clearInterval(countdownInterval);
                 triggerPortalDetonation();
@@ -225,28 +300,36 @@
         const flash = document.getElementById('blindingFlash');
         const portalBtn = document.getElementById('portalTriggerBtn');
         
-        flash.style.opacity = '1';
+        if (flash) flash.style.opacity = '1';
         
         setTimeout(() => {
             isDataDeciphered = true; 
             isOverloading = false;
             
-            portalBtn.classList.remove('budging');
-            portalBtn.classList.add('fused-locked'); 
+            if (portalBtn) {
+                portalBtn.classList.remove('budging');
+                portalBtn.classList.add('fused-locked'); 
+            }
             
-            document.getElementById('priceShieldShroud').classList.add('shattered');
+            const shieldShroud = document.getElementById('priceShieldShroud');
+            if (shieldShroud) shieldShroud.classList.add('shattered');
+            
             compileFinalBalanceOutputs();
             
-            document.getElementById('crystalEnergy').classList.remove('uncharged');
-            document.getElementById('portalStatusLabel').innerHTML = "MATRIX<br>STABLE";
+            const crystal = document.getElementById('crystalEnergy');
+            const statusLabel = document.getElementById('portalStatusLabel');
+            if (crystal) crystal.classList.remove('uncharged');
+            if (statusLabel) statusLabel.innerHTML = "MATRIX<br>STABLE";
 
-            flash.style.transition = 'opacity 0.8s ease-in-out';
-            flash.style.opacity = '0';
-            
-            setTimeout(() => {
-                flash.style.transition = 'opacity 0.05s ease-out';
-            }, 800);
+            document.body.classList.remove('critical-overload');
 
+            if (flash) {
+                flash.style.transition = 'opacity 0.8s ease-in-out';
+                flash.style.opacity = '0';
+                setTimeout(() => {
+                    flash.style.transition = 'opacity 0.05s ease-out';
+                }, 800);
+            }
         }, 70); 
     }
 
@@ -257,17 +340,26 @@
             baseSum += itm.price;
             monthlySum += itm.monthly;
         });
-        document.getElementById('outputMonthly').textContent = `₹${monthlySum.toLocaleString('en-IN')} / mo`;
-        document.getElementById('outputTotal').textContent = `₹${baseSum.toLocaleString('en-IN')}`;
+        
+        const outMonthly = document.getElementById('outputMonthly');
+        const outTotal = document.getElementById('outputTotal');
+        if (outMonthly) outMonthly.textContent = `₹${monthlySum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mo`;
+        if (outTotal) outTotal.textContent = `₹${baseSum.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
 
     function lockDataShields() {
         isDataDeciphered = false;
         const portalBtn = document.getElementById('portalTriggerBtn');
-        portalBtn.classList.remove('fused-locked');
-        document.getElementById('priceShieldShroud').classList.remove('shattered');
-        document.getElementById('crystalEnergy').classList.add('uncharged');
-        document.getElementById('shieldStatusText').textContent = "Configuration Locked";
+        if (portalBtn) portalBtn.classList.remove('fused-locked');
+        
+        const shieldShroud = document.getElementById('priceShieldShroud');
+        const crystal = document.getElementById('crystalEnergy');
+        const shieldText = document.getElementById('shieldStatusText');
+        
+        if (shieldShroud) shieldShroud.classList.remove('shattered');
+        if (crystal) crystal.classList.add('uncharged');
+        if (shieldText) shieldText.textContent = "Configuration Locked";
+        document.body.classList.remove('critical-overload');
     }
 
     window.removeEcosystemElement = function(index) {
@@ -288,11 +380,15 @@
         updateInventoryListsOnly();
         
         const portalBtn = document.getElementById('portalTriggerBtn');
-        portalBtn.classList.remove('ready-to-fuse', 'fused-locked');
+        if (portalBtn) portalBtn.classList.remove('ready-to-fuse', 'fused-locked');
         
-        document.getElementById('portalStatusLabel').innerHTML = "System<br>Empty";
-        document.getElementById('outputMonthly').textContent = '₹0.00 / mo';
-        document.getElementById('outputTotal').textContent = '₹0.00';
+        const statusLabel = document.getElementById('portalStatusLabel');
+        const outMonthly = document.getElementById('outputMonthly');
+        const outTotal = document.getElementById('outputTotal');
+        
+        if (statusLabel) statusLabel.innerHTML = "System<br>Empty";
+        if (outMonthly) outMonthly.textContent = '₹0.00 / mo';
+        if (outTotal) outTotal.textContent = '₹0.00';
     };
 
     renderSelectionPanels();

@@ -18,156 +18,111 @@
     </nav>
 </header>
 
-<main class="store-main">
-    <div class="store-hero">
-        <h1>Ecosystem <span>Hardware Deck</span></h1>
-        <p>Acquire modular agricultural parts to manifest high-yield vertical operations instantly. Test structural blueprints anytime in our Quantum Calculator matrix.</p>
-    </div>
+<div class="store-container">
+    <main class="store-main">
+        <div class="products-deck-grid" id="productsDeckGrid"></div>
+    </main>
 
-    <div class="section-title-wrapper">
-        <div class="section-title core">⚡ Core Materials (Important Baseline)</div>
-    </div>
-    
-    <div class="products-grid">
-        <div class="product-card core-item">
-            <div class="card-header">
-                <div class="product-icon">🌱</div>
-                <span class="product-badge">Baseline Frame</span>
-            </div>
-            <div class="product-info">
-                <h3>Small System Frame</h3>
-                <p>Perfect windowsill structural core. Compact, ultra-durable baseline framework built from recycled composite polymer.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹3,500</span>
-                    <span class="recurring-cost">+₹250 / mo</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h2>Acquired Modules</h2>
+            <span class="cart-count-bubble" id="cartCountBubble">0</span>
         </div>
-
-        <div class="product-card core-item">
-            <div class="card-header">
-                <div class="product-icon">🌿</div>
-                <span class="product-badge">Mid Tier Matrix</span>
-            </div>
-            <div class="product-info">
-                <h3>Medium System Frame</h3>
-                <p>Designed for full balcony scaling arrays. High configuration load limiters for dense spatial vertical farming layouts.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹7,500</span>
-                    <span class="recurring-cost">+₹450 / mo</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
-        </div>
-
-        <div class="product-card core-item">
-            <div class="card-header">
-                <div class="product-icon">🌳</div>
-                <span class="product-badge">Homestead Class</span>
-            </div>
-            <div class="product-info">
-                <h3>Large System Frame</h3>
-                <p>Heavy duty vertical automated growth tower framework designed for expansive high-volume vegetable yields.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹16,500</span>
-                    <span class="recurring-cost">+₹950 / mo</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
-        </div>
-
-        <div class="product-card core-item">
-            <div class="card-header">
-                <div class="product-icon">💧</div>
-                <span class="product-badge">Life Support</span>
-            </div>
-            <div class="product-info">
-                <h3>Silent Flow Hydro Pump</h3>
-                <p>High continuous flow magnetic-drive submersible motor. Provides constant whisper-quiet nutrient feeding lines.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹1,800</span>
-                    <span class="recurring-cost">+₹120 / mo</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
-        </div>
-
-        <div class="product-card core-item">
-            <div class="card-header">
-                <div class="product-icon">💡</div>
-                <span class="product-badge">Photosynthetic</span>
-            </div>
-            <div class="product-info">
-                <h3>Full LED Sunlight Array</h3>
-                <p>Accelerated photosynthetic radiation modules. Emits optimized nanometer specific spectrum bands for maximum growth speed.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹4,500</span>
-                    <span class="recurring-cost">+₹350 / mo</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
+        <div class="cart-items-wrapper" id="cartItemsWrapper"></div>
+        <div class="cart-footer">
+            <button class="primary-btn" style="width: 100%;" onclick="routeToCalculatorMatrix()">Load Elements inside Portal</button>
         </div>
     </div>
+</div>
 
-    <div class="section-title-wrapper">
-        <div class="section-title opt">⭐ Optional Modules & Optimization</div>
-    </div>
+<div class="toggle-cart-trigger" onclick="toggleCartDrawer()">🛒</div>
 
-    <div class="products-grid">
-        <div class="product-card opt-item">
-            <div class="card-header">
-                <div class="product-icon">🧪</div>
-                <span class="product-badge">Diagnostics</span>
-            </div>
-            <div class="product-info">
-                <h3>Precision pH Balance Drops</h3>
-                <p>Optional calibration metric fluids. Keeps your water tank environment scientifically pristine for optimized absorption.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹1,200</span>
-                    <span class="recurring-cost">₹0.00 recurring</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
-        </div>
+<footer>
+    <div class="footer-tagline">Calculate Faster, Progress Faster</div>
+    <p class="footer-main-text">All elements are calculated from direct distributor inventory catalogs.</p>
+    <div class="farmspherica-badge">A Farmspherica Innovation</div>
+    <p class="footer-sub-text" style="margin-top:0.75rem;">© 2026 CalcuLab. All rights reserved.</p>
+</footer>
 
-        <div class="product-card opt-item">
-            <div class="card-header">
-                <div class="product-icon">🧬</div>
-                <span class="product-badge">Biotic Boost</span>
-            </div>
-            <div class="product-info">
-                <h3>Organic Trace Minerals</h3>
-                <p>Optional concentrated dynamic metabolic catalyst feed package. Dramatically expands root strength and crop volume health.</p>
-            </div>
-            <div class="card-footer">
-                <div class="price-tag">
-                    <span class="setup-cost">₹1,500</span>
-                    <span class="recurring-cost">+₹850 / mo</span>
-                </div>
-                <button class="buy-btn">Acquire</button>
-            </div>
-        </div>
-    </div>
-</main>
-
+<script src="script.js"></script>
 <script>
+    let shoppingCart = JSON.parse(localStorage.getItem('calcuLabCart')) || [];
+
+    function toggleCartDrawer() {
+        document.body.classList.toggle('cart-active');
+    }
+
+    function renderStoreProducts() {
+        const grid = document.getElementById('productsDeckGrid');
+        if (!grid) return;
+
+        grid.innerHTML = catalogItems.map(item => `
+            <div class="product-hardware-card">
+                <div>
+                    <div class="prod-meta-head">
+                        <div class="prod-icon-box">${item.icon}</div>
+                        <div class="prod-cost-tag">₹${item.price.toFixed(2)}</div>
+                    </div>
+                    <h3>${item.name}</h3>
+                    <p>${item.desc}</p>
+                </div>
+                <button class="secondary-btn" style="width:100%; font-size:0.8rem; padding:0.6rem;" onclick="addHardwareToCart('${item.id}')">Acquire Material</button>
+            </div>
+        `).join('');
+    }
+
+    window.addHardwareToCart = function(id) {
+        const prod = catalogItems.find(i => i.id === id);
+        if (prod) {
+            shoppingCart.push(prod);
+            localStorage.setItem('calcuLabCart', JSON.stringify(shoppingCart));
+            renderCartUI();
+            if(!document.body.classList.contains('cart-active')) {
+                toggleCartDrawer();
+            }
+        }
+    };
+
+    window.removeCartItem = function(idx) {
+        shoppingCart.splice(idx, 1);
+        localStorage.setItem('calcuLabCart', JSON.stringify(shoppingCart));
+        renderCartUI();
+    };
+
+    function routeToCalculatorMatrix() {
+        if(shoppingCart.length === 0) {
+            alert('Please acquire at least one module framework to process.');
+            return;
+        }
+        window.location.href = 'calcu.html?autoLoad=true';
+    }
+
+    function renderCartUI() {
+        const wrapper = document.getElementById('cartItemsWrapper');
+        const badgeCount = document.getElementById('cartCountBubble');
+        
+        badgeCount.textContent = shoppingCart.length;
+
+        if (shoppingCart.length === 0) {
+            wrapper.innerHTML = `<p class="empty-cart-notice">No materials acquired yet. Browse components...</p>`;
+            return;
+        }
+
+        wrapper.innerHTML = shoppingCart.map((item, idx) => `
+            <div class="cart-item-row">
+                <div class="cart-item-details">
+                    <h4>${item.icon} ${item.name}</h4>
+                    <p>🔒 Signal Locked</p>
+                </div>
+                <button class="remove-item-btn" onclick="removeCartItem(${idx})">Remove</button>
+            </div>
+        `).join('');
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
-        document.body.classList.add("page-loaded");
+        renderStoreProducts();
+        renderCartUI();
     });
 </script>
-
 </body>
 </html>

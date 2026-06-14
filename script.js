@@ -1,295 +1,148 @@
 /**
  * ==========================================================================
  * CALCULAB - CENTRAL CORE OPERATIONAL MODULE DATA ENGINE
- * ==========================================================================
+ * ==========================================================================\
  */
 
-// Central Pricing Catalog Master Array
+// Central Pricing Catalog Master Array (Rupee Sync & Clean Emojis)
 const catalogItems = [
-    { id: 'sm_system', type: 'imp', name: 'Small System Frame', price: 45.00, monthly: 3.50, icon: '🌱', desc: 'Windowsill core structure frame module.' },
-    { id: 'md_system', type: 'imp', name: 'Medium System Frame', price: 110.00, monthly: 7.00, icon: '📦', desc: 'Balcony scaling layout baseline tier.' },
-    { id: 'lg_system', type: 'imp', name: 'Large System Frame', price: 240.00, monthly: 14.50, icon: '🗼', desc: 'Homestead vertical farming tower core.' },
-    { id: 'pump', type: 'imp', name: 'Silent Flow Hydro Pump', price: 28.00, monthly: 1.80, icon: '💧', desc: 'Core life-support circulation pump.' },
-    { id: 'lights', type: 'imp', name: 'Full LED Sunlight Array', price: 65.00, monthly: 5.20, icon: '💡', desc: 'Essential baseline photosynthetic radiation.' },
-    
-    { id: 'ph_kit', type: 'opt', name: 'Precision pH Balance Drops', price: 18.50, monthly: 0.00, icon: '🧪', desc: 'Optional calibration metric fluids.' },
-    { id: 'minerals', type: 'opt', name: 'Organic Trace Minerals', price: 22.00, monthly: 12.00, icon: '🧬', desc: 'Optional concentrated metabolic feed pack.' }
+    { id: 'sm_system', type: 'imp', name: 'Small System Frame', price: 3500.00, monthly: 250.00, icon: '🌱', desc: 'Windowsill core structure frame module.' },
+    { id: 'md_system', type: 'imp', name: 'Medium System Frame', price: 7500.00, monthly: 450.00, icon: '🌿', desc: 'Balcony scaling layout baseline tier.' },
+    { id: 'lg_system', type: 'imp', name: 'Large System Frame', price: 16500.00, monthly: 950.00, icon: '🌳', desc: 'Homestead vertical farming tower core.' },
+    { id: 'pump', type: 'imp', name: 'Silent Flow Hydro Pump', price: 1800.00, monthly: 120.00, icon: '💧', desc: 'Core life-support circulation pump.' },
+    { id: 'lights', type: 'imp', name: 'Full LED Sunlight Array', price: 4500.00, monthly: 350.00, icon: '💡', desc: 'Essential baseline photosynthetic radiation.' },
+    { id: 'ph_kit', type: 'opt', name: 'Precision pH Balance Drops', price: 850.00, monthly: 0.00, icon: '🧪', desc: 'Water diagnostic matrix stabilization kit.' },
+    { id: 'clay_balls', type: 'opt', name: 'Expanded Clay Media (Pebbles)', price: 1200.00, monthly: 0.00, icon: '🪨', desc: 'Porous sterile secondary root anchors.' },
+    { id: 'nutrients', type: 'opt', name: 'Premium Macro NPK Fluid', price: 2400.00, monthly: 650.00, icon: '🧪', desc: 'Ecosystem mineral re-generation compound.' }
 ];
-let portalActiveInventory = [];
-let isDataDeciphered = false; 
-let isOverloading = false;
 
-/**
- * Tab switcher function for Armory Selection Menu Matrix
- */
-window.switchArmoryTab = function(event, type) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+let portalActiveInventory = [];
+
+window.initAndRenderArmoryPanels = function() {
+    const reqDeck = document.getElementById('requiredDeckWrapper');
+    const optDeck = document.getElementById('optionalDeckWrapper');
     
-    if(event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
-    }
-    const targetContent = document.getElementById(`tabContent-${type}`);
-    if(targetContent) targetContent.classList.add('active');
+    if (!reqDeck || !optDeck) return;
+
+    reqDeck.innerHTML = '';
+    optDeck.innerHTML = '';
+
+    catalogItems.forEach(item => {
+        const nodeHTML = `
+            <div class="item-node" onclick="transmitComponentToConveyor('${item.id}')">
+                <div class="node-icon">${item.icon}</div>
+                <div class="node-details">
+                    <h3>${item.name}</h3>
+                    <p>${item.desc}</p>
+                </div>
+                <div class="node-price">₹${item.price.toFixed(2)}</div>
+            </div>
+        `;
+        if (item.type === 'imp') {
+            reqDeck.innerHTML += nodeHTML;
+        } else {
+            optDeck.innerHTML += nodeHTML;
+        }
+    });
 };
 
-/**
- * Generates and populates selection blocks dynamically from global master object
- */
-function initAndRenderArmoryPanels() {
-    const impContainer = document.getElementById('tabContent-imp');
-    const optContainer = document.getElementById('tabContent-opt');
-
-    if (!impContainer || !optContainer) return; // Exit gracefully if not on calcu.html
-
-    impContainer.innerHTML = catalogItems.filter(i => i.type === 'imp').map(module => generateNodeHTML(module)).join('');
-    optContainer.innerHTML = catalogItems.filter(i => i.type === 'opt').map(module => generateNodeHTML(module)).join('');
-}
-
-function generateNodeHTML(module) {
-    return `
-        <div class="item-node" onclick="transmitItemToPortal('${module.id}')">
-            <div class="node-icon">${module.icon}</div>
-            <div class="node-details">
-                <h3>${module.name}</h3>
-                <p>${module.desc}</p>
-            </div>
-            <div class="node-price">$${module.price.toFixed(2)}</div>
-        </div>
-    `;
-}
-
-/**
- * Handles Conveyor Belt Capsule Animations and variables transmission
- */
-window.transmitItemToPortal = function(id) {
-    if (isOverloading) return;
-
-    const itemObj = catalogItems.find(m => m.id === id);
-    if (!itemObj) return;
-
-    if (isDataDeciphered) {
-        lockDataShields();
+window.switchArmoryTab = function(event, tabType) {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(t => t.classList.remove('active'));
+    
+    if(event) {
+        event.currentTarget.classList.add('active');
+    } else {
+        const defaultBtn = document.querySelector(`.tab-btn[onclick*="'${tabType}'"]`);
+        if (defaultBtn) defaultBtn.classList.add('active');
     }
 
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(c => c.classList.remove('active'));
+    
+    const targetContent = document.getElementById(tabType === 'imp' ? 'requiredDeckWrapper' : 'optionalDeckWrapper');
+    if (targetContent) targetContent.classList.add('active');
+};
+
+window.transmitComponentToConveyor = function(id) {
+    const foundItem = catalogItems.find(item => item.id === id);
+    if (!foundItem) return;
+
     const capsule = document.getElementById('travelingCapsule');
-    if(capsule) {
-        capsule.textContent = itemObj.icon;
+    if (capsule) {
+        capsule.textContent = foundItem.icon;
         capsule.style.animation = 'none';
-        capsule.offsetHeight; // Trigger reflow layout repaint
-        capsule.style.animation = 'customTransmit 0.9s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards';
+        void capsule.offsetWidth; // Trigger DOM reflow sequence cleanly
+        capsule.style.animation = 'customTransmit 0.75s cubic-bezier(0.4, 0, 0.2, 1) forwards';
     }
 
     setTimeout(() => {
-        portalActiveInventory.push(itemObj);
+        portalActiveInventory.push({ ...foundItem });
         updateInventoryListsOnly();
         
         const portalBtn = document.getElementById('portalTriggerBtn');
-        if(portalBtn) {
-            portalBtn.classList.remove('fused-locked');
+        if (portalBtn && !portalBtn.classList.contains('fused-locked')) {
             portalBtn.classList.add('ready-to-fuse');
+            document.getElementById('portalStatusLabel').innerHTML = "Ready to<br>Align";
         }
-        
-        const statusLabel = document.getElementById('portalStatusLabel');
-        const shieldText = document.getElementById('shieldStatusText');
-        if(statusLabel) statusLabel.innerHTML = "READY TO<br>FUSE";
-        if(shieldText) shieldText.textContent = "Signal Primed";
-    }, 900);
+    }, 600);
 };
 
-/**
- * Updates Manifestation Vault display blocks mapping values cleanly
- */
-function updateInventoryListsOnly() {
-    const streamContainer = document.getElementById('matrixSplitStreams');
-    const nodeCount = document.getElementById('nodeCount');
+window.updateInventoryListsOnly = function() {
+    const stream = document.getElementById('matrixSplitStreams');
+    if (!stream) return;
 
-    if(!streamContainer || !nodeCount) return;
-
-    nodeCount.textContent = `${portalActiveInventory.length} Unit${portalActiveInventory.length !== 1 ? 's' : ''}`;
-
-    if(portalActiveInventory.length === 0) {
-        streamContainer.innerHTML = `<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding-top:2rem; font-style:italic;">Portal matrix idling. Feed variables...</p>`;
+    if (portalActiveInventory.length === 0) {
+        stream.innerHTML = `<p class="empty-cart-notice">No elements configured into the system stream array.</p>`;
         return;
     }
 
-    const impItems = portalActiveInventory.filter(i => i.type === 'imp');
-    const optItems = portalActiveInventory.filter(i => i.type === 'opt');
-
-    let outputHTML = '';
-    if (impItems.length > 0) {
-        outputHTML += `<div class="stream-section-title imp">Core Materials (${impItems.length})</div>`;
-        outputHTML += impItems.map(item => generateStreamNodeHTML(item)).join('');
-    }
-    if (optItems.length > 0) {
-        outputHTML += `<div class="stream-section-title opt" style="margin-top: 0.75rem;">Optional Modules (${optItems.length})</div>`;
-        outputHTML += optItems.map(item => generateStreamNodeHTML(item)).join('');
-    }
-    streamContainer.innerHTML = outputHTML;
-}
-
-function generateStreamNodeHTML(item) {
-    const accurateIndex = portalActiveInventory.indexOf(item);
-    return `
+    stream.innerHTML = portalActiveInventory.map((item, index) => `
         <div class="stream-node">
             <span>${item.icon} ${item.name}</span>
-            <span class="neg" onclick="removeEcosystemElement(${accurateIndex})">[x]</span>
+            <span class="neg" onclick="removeEcosystemElement(${index})">[Delete]</span>
         </div>
-    `;
-}
-
-/**
- * Initiates the structural portal overloading matrix compilation loop
- */
-window.startPortalOverloadSequence = function() {
-    const portalBtn = document.getElementById('portalTriggerBtn');
-    if (!portalBtn || portalActiveInventory.length === 0 || isOverloading || isDataDeciphered) return;
-    
-    isOverloading = true;
-    portalBtn.classList.remove('ready-to-fuse');
-    portalBtn.classList.add('budging');
-    
-    const shieldText = document.getElementById('shieldStatusText');
-    if(shieldText) shieldText.textContent = "CRITICAL OVERLOAD";
-    
-    let timeLeft = 3;
-    const statusLabel = document.getElementById('portalStatusLabel');
-    if(statusLabel) statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
-
-    const countdownInterval = setInterval(() => {
-        timeLeft--;
-        if (timeLeft > 0) {
-            if(statusLabel) statusLabel.innerHTML = `OVERLOAD<br>${timeLeft}s`;
-        } else {
-            clearInterval(countdownInterval);
-            triggerPortalDetonation();
-        }
-    }, 1000);
+    `).join('');
 };
 
-function triggerPortalDetonation() {
-    const flash = document.getElementById('blindingFlash');
-    const portalBtn = document.getElementById('portalTriggerBtn');
-    
-    if(flash) flash.style.opacity = '1';
-    
-    setTimeout(() => {
-        isDataDeciphered = true; 
-        isOverloading = false;
-        
-        if(portalBtn) {
-            portalBtn.classList.remove('budging');
-            portalBtn.classList.add('fused-locked'); 
-        }
-        
-        const shieldShroud = document.getElementById('priceShieldShroud');
-        const crystalEnergy = document.getElementById('crystalEnergy');
-        const statusLabel = document.getElementById('portalStatusLabel');
+window.compileFinalBalanceOutputs = function() {
+    let runningSetupTotal = 0;
+    let runningMonthlyTotal = 0;
 
-        if(shieldShroud) shieldShroud.classList.add('shattered');
-        compileFinalBalanceOutputs();
-        
-        if(crystalEnergy) crystalEnergy.classList.remove('uncharged');
-        if(statusLabel) statusLabel.innerHTML = "MATRIX<br>STABLE";
-
-        if(flash) {
-            flash.style.transition = 'opacity 0.8s ease-in-out';
-            flash.style.opacity = '0';
-            setTimeout(() => {
-                flash.style.transition = 'opacity 0.05s ease-out';
-            }, 800);
-        }
-    }, 70); 
-}
-
-function compileFinalBalanceOutputs() {
-    let baseSum = 0;
-    let monthlySum = 0;
-    portalActiveInventory.forEach(itm => {
-        baseSum += itm.price;
-        monthlySum += itm.monthly;
+    portalActiveInventory.forEach(item => {
+        runningSetupTotal += item.price;
+        runningMonthlyTotal += item.monthly;
     });
 
     const outMonthly = document.getElementById('outputMonthly');
     const outTotal = document.getElementById('outputTotal');
-    if(outMonthly) outMonthly.textContent = `$${monthlySum.toFixed(2)} / mo`;
-    if(outTotal) outTotal.textContent = `$${baseSum.toFixed(2)}`;
-}
 
-function lockDataShields() {
-    isDataDeciphered = false;
-    
-    const portalBtn = document.getElementById('portalTriggerBtn');
-    if(portalBtn) portalBtn.classList.remove('fused-locked');
-    
-    const shieldShroud = document.getElementById('priceShieldShroud');
-    const crystalEnergy = document.getElementById('crystalEnergy');
-    const shieldText = document.getElementById('shieldStatusText');
-
-    if(shieldShroud) shieldShroud.classList.remove('shattered');
-    if(crystalEnergy) crystalEnergy.classList.add('uncharged');
-    if(shieldText) shieldText.textContent = "Matrix Locked";
-}
-
-window.removeEcosystemElement = function(index) {
-    if (isOverloading) return;
-    portalActiveInventory.splice(index, 1);
-    updateInventoryListsOnly();
-    if (portalActiveInventory.length === 0) {
-        purgePortal();
-    } else if (isDataDeciphered) {
-        compileFinalBalanceOutputs();
-    }
+    if (outMonthly) outMonthly.textContent = `₹${runningMonthlyTotal.toFixed(2)} / mo`;
+    if (outTotal) outTotal.textContent = `₹${runningSetupTotal.toFixed(2)}`;
 };
 
-window.purgePortal = function() {
-    if (isOverloading) return;
-    portalActiveInventory = [];
-    lockDataShields();
-    updateInventoryListsOnly();
-    
-    const portalBtn = document.getElementById('portalTriggerBtn');
-    if(portalBtn) portalBtn.classList.remove('ready-to-fuse', 'fused-locked');
-    
-    const statusLabel = document.getElementById('portalStatusLabel');
-    const outMonthly = document.getElementById('outputMonthly');
-    const outTotal = document.getElementById('outputTotal');
-
-    if(statusLabel) statusLabel.innerHTML = "Portal<br>Idling";
-    if(outMonthly) outMonthly.textContent = '$0.00 / mo';
-    if(outTotal) outTotal.textContent = '$0.00';
-};
-
-// Fire initiation loops on document ready load
-document.addEventListener('DOMContentLoaded', () => {
-    initAndRenderArmoryPanels();
-    updateInventoryListsOnly();
-});
+// Global Page Interceptor Routing & Mount Lifecycle
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Smooth Entry: Add the class to fade-in the page once DOM is fully mounted
+    if (document.getElementById('requiredDeckWrapper')) {
+        window.initAndRenderArmoryPanels();
+        window.switchArmoryTab(null, 'imp');
+    }
+    window.updateInventoryListsOnly();
+
     setTimeout(() => {
+        document.body.classList.remove("page-exiting");
         document.body.classList.add("page-loaded");
     }, 50);
 
-    // 2. Smooth Exit: Intercept navigation links to trigger a fade-out sequence
     const navigationLinks = document.querySelectorAll("nav a, .logo");
-
     navigationLinks.forEach(link => {
         link.addEventListener("click", (event) => {
             const destinationUrl = link.getAttribute("href");
-
-            // Ignore anchor link scrolling inside the same page
             if (!destinationUrl || destinationUrl.startsWith("#") || destinationUrl.includes("index.html#")) {
                 return;
             }
-
-            // Prevent default instantaneous browser redirection jump
             event.preventDefault();
-
-            // Trigger premium fading out animation
             document.body.classList.add("page-exiting");
-
-            // Execute actual page switch precisely as CSS transition completes (400ms)
             setTimeout(() => {
                 window.location.href = destinationUrl;
             }, 400);
